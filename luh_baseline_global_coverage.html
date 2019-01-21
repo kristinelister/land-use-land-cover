@@ -1,0 +1,104 @@
+<html>
+  <head>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawChart);
+      var color_list;
+
+      function drawChart(){
+        var DATA_SOURCE_URL = 'https://docs.google.com/spreadsheets/d/1YosT37jv80zyTawSu7vsmIyUPA6sw2yvPIIBF0xcdF4/gviz/tq?headers=1&tq='
+        var query = new google.visualization.Query(DATA_SOURCE_URL);
+
+        var start_year = document.getElementsByName("startyear")[0].value;
+        var end_year = document.getElementsByName("endyear")[0].value;
+        color_list = [];
+
+        var query_string = 'select A, ';
+        
+        if(document.getElementsByName("urban")[0].checked){
+          query_string = query_string.concat('B, ');
+          color_list.push("ff0000");
+        };
+        if(document.getElementsByName("cropland")[0].checked){
+          query_string = query_string.concat('C, ');
+          color_list.push("F9F300");
+        };
+        if(document.getElementsByName("rangeland")[0].checked){
+          query_string = query_string.concat('D, ');
+          color_list.push("764E13");
+        };
+        if(document.getElementsByName("pastureland")[0].checked){
+          query_string = query_string.concat('E, ');
+          color_list.push("FE9C09");
+        };
+        if(document.getElementsByName("forest")[0].checked){
+          query_string = query_string.concat('F, ');
+          color_list.push("146D00");
+        };
+        if(document.getElementsByName("non-forest")[0].checked){
+          query_string = query_string.concat('G, ');
+          color_list.push("85D75A");
+        };
+        query_string = query_string.slice(0, -2);
+        query_string = query_string.concat(' where A >= ');
+        query_string = query_string.concat(start_year);
+        query_string = query_string.concat(' and A <= ');
+        query_string = query_string.concat(end_year);
+        query.setQuery(query_string);
+        query.send(handleQueryResponse);
+      }
+
+      function handleQueryResponse(response) {
+        if (response.isError()) {
+          alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+          return;
+        }
+        var data = response.getDataTable();
+        var options = {
+          title: 'Historical Land Use',
+          curveType: 'function',
+          legend: { 
+            position: 'top',
+            maxLines: 3
+           },
+          hAxis: {
+            title: 'Year',
+            format: ' ',
+            titleTextStyle:{
+              bold: true
+            }
+          },
+          vAxis: {
+            title: 'Area [square km]',
+            format: 'short',
+            titleTextStyle:{
+              bold: true
+            }
+          },
+          fontSize: 16,
+          lineWidth: 3,
+          colors: color_list
+        };
+        var chart = new google.visualization.LineChart(document.getElementById('line_chart'));
+        chart.draw(data, options);
+      }
+
+    </script>
+  </head>
+  <body>
+    <form action="javascript:drawChart();" method="post" target="_self">
+      <input type="checkbox" onchange="drawChart();" name="urban" value="urban" checked="checked"">Urban<br>
+      <input type="checkbox" onchange="drawChart();" name="cropland" value="cropland" checked="checked">Cropland<br>
+      <input type="checkbox" onchange="drawChart();" name="pastureland" value="pastureland" checked="checked">Pastureland<br>
+      <input type="checkbox" onchange="drawChart();" name="rangeland" value="rangeland" checked="checked">Rangeland<br>
+      <input type="checkbox" onchange="drawChart();" name="forest" value="forest" checked="checked">Forest<br>
+      <input type="checkbox" onchange="drawChart();" name="non-forest" value="non-forest" checked="checked">Non-Forest<br>
+      Start Year:<br>
+      <input type="text" onchange="drawChart();" name="startyear" value="850"><br>
+      End Year:<br>
+      <input type="text" onchange="drawChart();" name="endyear" value="2015"><br><br>
+    </form>
+    <div id="line_chart" style="width: 900px; height: 500px"></div>
+  </body>
+</html>
