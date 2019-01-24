@@ -38,8 +38,7 @@ DATA_DIR = 'LUH_data/data/'
 ASC_FILENAME = DATA_DIR+'{yearstr}_anthromes.asc'
 
 BC_YEARS = np.arange(1000,11000,1000)
-BC_YEARS = np.concatenate([np.arange(0,1800,100),np.arange(1710,2010,10),np.arange(2001,2016,1)])
-AD_YEARS = np.arange(2016,2018,1)
+AD_YEARS = np.concatenate([np.arange(0,1800,100),np.arange(1710,2010,10),np.arange(2001,2018,1)])
 
 URL = 'ftp://ftp.pbl.nl/hyde/hyde3.2/baseline/zip/{filename}'
 DOWNLOAD_NAME = '{year}{AD}_pop.zip'
