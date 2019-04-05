@@ -29,7 +29,7 @@ for year in YEARS:
     #Read in dataframe
     in_df = pd.read_csv(INPUT_CSV.format(year=year),header=0,index_col=0)
     
-    #1. CONVERT PIXEL COUNTS TO PERCENT COVER FOR EACH ECOREGION
+    #1. CONVERT AREA TO PERCENT COVER FOR EACH ECOREGION
     #The purpose of this section of code is to find the percent coverage of each land cover class over the years for each of the ecoregions
     #Copy over dataframe
     perc_df = in_df.copy()
@@ -45,7 +45,7 @@ for year in YEARS:
            perc_df.at[index,lc] = perc_val
     perc_df.to_csv(all_perc_csv.format(year=year))
 
-    #2. PIXEL COUNTS FOR UNIQUE BIOME, REALM PAIRS
+    #2. FIND LAND COVER AREA FOR UNIQUE BIOME, REALM PAIRS
     #The purpose of this section of code is to find the land cover information for unique biome, realm pairs
     #Get unique biome, realm pairs
     biomes_realms = in_df[['BIOME_NAME','REALM']]
@@ -56,8 +56,8 @@ for year in YEARS:
     biome_realm_df['Realm'] = biomes_realms['REALM'].tolist()
     biome_realm_df['Total'] = 0.0
 
-    #2a. SUM PIXEL COUNTS FOR EACH BIOME, REALM PAIR
-    #The purpose of this section of code is to sum the pixel counts of each year and land cover class over the ecoregions that match
+    #2a. SUM LAND COVER AREA FOR EACH BIOME, REALM PAIR
+    #The purpose of this section of code is to sum the area of each year and land cover class over the ecoregions that match
     #   the biome, realm pairs as above
     #Iterate over the biome,realm pairs of the biome_realm_df and fill in land cover values
     for biome_index,biome_row in biome_realm_df.iterrows():
@@ -66,9 +66,9 @@ for year in YEARS:
         biome_realm_df.at[biome_index,'Total'] = np.sum(np.array(temp_df['Total'].tolist()))
         #Iterate over land cover types
         for lc in lc_names:
-            #Get array of pixel counts for that land cover for ecoregions that match that biome and realm
+            #Get array of area for that land cover for ecoregions that match that biome and realm
             lc_year_array = np.array(temp_df[lc].tolist())
-            #Sum over pixel counts
+            #Sum over areas
             lc_year_sum = np.sum(lc_year_array)
             #Save to dataframe
             biome_realm_df.at[biome_index,lc] = lc_year_sum
@@ -99,8 +99,8 @@ for year in YEARS:
 
 
 
-    #3. PIXEL COUNTS FOR BIOMES
-    #The purpose of this section of code is to find the pixel counts for each biome
+    #3. AREA FOR BIOMES
+    #The purpose of this section of code is to find the area for each biome
     #Get unique biome names
     biomes = in_df['BIOME_NAME']
     biomes = biomes.drop_duplicates()
@@ -110,8 +110,8 @@ for year in YEARS:
     #Save empty column for total
     biome_df['Total'] = 0.0
 
-    #3a. SUM PIXEL COUNTS FOR EACH BIOME
-    #The purpose of this section of code is to sum the pixel counts of each year and land cover class over the ecoregions that match the biomes above
+    #3a. SUM AREA FOR EACH BIOME
+    #The purpose of this section of code is to sum the area of each year and land cover class over the ecoregions that match the biomes above
     #Iterate over the biomes of the biome_df and fill in land cover values
     for biome_index,biome_row in biome_df.iterrows():
         #Get subset of dataframe of ecoregions that match the biome
@@ -119,9 +119,9 @@ for year in YEARS:
         biome_df.at[biome_index,'Total'] = np.sum(np.array(temp_df['Total'].tolist()))
         #Iterate over land cover types
         for lc in lc_names:
-            #Get array of pixel counts for that land cover for ecoregions that match that biome 
+            #Get array of area for that land cover for ecoregions that match that biome 
             lc_year_array = np.array(temp_df[lc].tolist())
-            #Sum over pixel counts
+            #Sum over area
             lc_year_sum = np.sum(lc_year_array)
             #Save land cover sum into dataframe
             biome_df.at[biome_index,lc] = lc_year_sum
